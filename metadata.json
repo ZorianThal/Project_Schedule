@@ -1,0 +1,6 @@
+{
+  "name": "College Schedule Telegram Bot",
+  "description": "Telegram bot and web explorer that parses college Excel schedules and displays weekly schedules by surname or student group with combined class detection",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
