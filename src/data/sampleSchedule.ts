@@ -745,6 +745,8 @@ export function generateSampleExcelWorkbook(): Uint8Array {
     '',
     '26-ИД-1',
     '',
+    '26-ИИ-1',
+    '',
   ];
   data.push(headerRow);
 
@@ -763,160 +765,245 @@ export function generateSampleExcelWorkbook(): Uint8Array {
     'Ауд.',
     'Дисциплина, вид занятия, преподаватель',
     'Ауд.',
+    'Дисциплина, вид занятия, преподаватель',
+    'Ауд.',
   ];
   data.push(subheaderRow);
 
-  // Helper to add lesson row
-  const addLesson = (
-    day: string,
-    date: string,
-    num: number,
-    time: string,
-    gA1: { text: string; aud: string },
-    gAN1: { text: string; aud: string },
-    gD1: { text: string; aud: string },
-    gZM1: { text: string; aud: string },
-    gID1: { text: string; aud: string }
-  ) => {
-    data.push([
-      `${day}\n${date}`,
-      num,
-      time,
-      gA1.text,
-      gA1.aud,
-      gAN1.text,
-      gAN1.aud,
-      gD1.text,
-      gD1.aud,
-      gZM1.text,
-      gZM1.aud,
-      gID1.text,
-      gID1.aud,
-    ]);
-  };
-
-  // Понедельник 14.09.2026
-  addLesson('Понедельник', '14.09.2026', 1, '09.00-10.20',
-    { text: '', aud: '' },
-    { text: '', aud: '' },
-    { text: 'Иностранный язык 2 п/г\nРоманенкова О.Л.', aud: '112' },
-    { text: '', aud: '' },
-    { text: '', aud: '' }
-  );
-  addLesson('Понедельник', '14.09.2026', 2, '10.30-11.50',
-    { text: 'Информатика\nЕвсеева А.Е.', aud: '216' },
-    { text: '', aud: '' },
-    { text: 'Русский язык\nМартыненко А.И.', aud: '111' },
-    { text: 'Иностранный язык\nКарнюшина Е.Е.', aud: '312' },
-    { text: '', aud: '' }
-  );
-  addLesson('Понедельник', '14.09.2026', 3, '12.10-13.30',
-    { text: 'Разговоры о важном/ Россия- мои горизонты\nМягкова В.А.', aud: '309' },
-    { text: '', aud: '' },
-    { text: 'Информатика\nЕвсеева А.Е.', aud: '216' },
-    { text: 'Разговоры о важном/ Россия- мои горизонты\nЖеребцова М.А.', aud: '110' },
-    { text: '', aud: '' }
-  );
-  addLesson('Понедельник', '14.09.2026', 4, '13.40-15.00',
-    { text: 'Иностранный язык 2 п/г\nКарнюшина Е.Е.', aud: '312' },
-    { text: 'Русский язык\nСергеева М.В.', aud: '306' },
-    { text: '', aud: '' },
-    { text: 'Русский язык\nГлущенко Н.Г.', aud: '110' },
-    { text: 'Русский язык\nМартыненко А.И.', aud: '111' }
-  );
-  addLesson('Понедельник', '14.09.2026', 5, '15.20-16.40',
-    { text: '', aud: '' },
-    { text: 'Информатика\nПарамонов Д.Д.', aud: '216' },
-    { text: '', aud: '' },
-    { text: '', aud: '' },
-    { text: 'Математика\nЛысик П.В.', aud: '217' }
-  );
-  addLesson('Понедельник', '14.09.2026', 6, '16.50-18.10',
-    { text: '', aud: '' },
-    { text: 'Иностранный язык 1+2 п/г\nРоманенкова О.Л.', aud: '110' },
-    { text: '', aud: '' },
-    { text: '', aud: '' },
-    { text: 'Введение в специальность\nМартыненко А.И.', aud: '111' }
-  );
-  addLesson('Понедельник', '14.09.2026', 7, '18.20-19.40',
-    { text: '', aud: '' }, { text: '', aud: '' }, { text: '', aud: '' }, { text: '', aud: '' }, { text: '', aud: '' }
-  );
-
-  // Вторник 15.09.2026
-  addLesson('Вторник', '15.09.2026', 1, '09.00-10.20',
-    { text: 'История\nЗаболотный Е.П.', aud: '110' },
-    { text: '', aud: '' },
-    { text: 'Физика\nВасильева О.О.', aud: '208' },
-    { text: '', aud: '' },
-    { text: '', aud: '' }
-  );
-  addLesson('Вторник', '15.09.2026', 2, '10.30-11.50',
-    { text: 'Биология\nКартенко Д.А.', aud: '110' },
-    { text: '', aud: '' },
-    { text: 'Математика\nПикуля Е.И.', aud: '111' },
-    { text: '', aud: '' },
-    { text: '', aud: '' }
-  );
-  addLesson('Вторник', '15.09.2026', 3, '12.10-13.30',
-    { text: 'Физика\nВасильева О.О.', aud: '208' },
-    { text: '', aud: '' },
-    { text: 'Информатика\nЕвсеева А.Е.', aud: '215' },
-    { text: '', aud: '' },
-    { text: 'Разговоры о важном/ Россия- мои горизонты\nБарбальс О.Н.', aud: '117' }
-  );
-  addLesson('Вторник', '15.09.2026', 4, '13.40-15.00',
-    { text: '', aud: '' },
-    { text: 'Биология\nКартенко Д.А.', aud: '116' },
-    { text: '', aud: '' },
-    { text: 'Физика\nВасильева О.О.', aud: '208' },
-    { text: 'История\nМарченко Л.Е.', aud: '110' }
-  );
-  addLesson('Вторник', '15.09.2026', 5, '15.20-16.40',
-    { text: '', aud: '' },
-    { text: 'Физика\nВасильева О.О.', aud: '208' },
-    { text: '', aud: '' },
-    { text: 'История\nЛысенко П.А.', aud: '110' },
-    { text: 'Литература\nМартыненко А.И.', aud: '111' }
-  );
-  addLesson('Вторник', '15.09.2026', 6, '16.50-18.10',
-    { text: '', aud: '' },
-    { text: 'Введение в специальность\nКравчук А.О.', aud: '110' },
-    { text: '', aud: '' },
-    { text: 'Введение в специальность\nМисюнайте А.Т.', aud: '111' },
-    { text: 'Информатика\nРыжова М.В.', aud: '216' }
-  );
-
-  // Среда 16.09.2026 (Combined lectures)
-  addLesson('Среда', '16.09.2026', 1, '09.00-10.20',
-    { text: 'Физика (Потоковая лекция)\nВасильева О.О.', aud: '208' },
-    { text: 'Физика (Потоковая лекция)\nВасильева О.О.', aud: '208' },
-    { text: 'Физика (Потоковая лекция)\nВасильева О.О.', aud: '208' },
-    { text: '', aud: '' },
-    { text: '', aud: '' }
-  );
-  addLesson('Среда', '16.09.2026', 2, '10.30-11.50',
-    { text: '', aud: '' },
-    { text: '', aud: '' },
-    { text: 'Введение в специальность\nМартыненко А.И.', aud: '111' },
-    { text: 'Введение в специальность\nМартыненко А.И.', aud: '111' },
-    { text: 'Введение в специальность\nМартыненко А.И.', aud: '111' }
-  );
-
-  const ws = XLSX.utils.aoa_to_sheet(data);
-
-  // Define merges for headers
-  ws['!merges'] = [
+  const mergesList: XLSX.Range[] = [
     // Title
-    { s: { r: 1, c: 3 }, e: { r: 1, c: 10 } },
+    { s: { r: 1, c: 3 }, e: { r: 1, c: 12 } },
     // Date
-    { s: { r: 3, c: 3 }, e: { r: 3, c: 10 } },
+    { s: { r: 3, c: 3 }, e: { r: 3, c: 12 } },
     // Group headers (span subject and aud)
     { s: { r: 5, c: 3 }, e: { r: 5, c: 4 } }, // 26-А-1
     { s: { r: 5, c: 5 }, e: { r: 5, c: 6 } }, // 26-АН-1
     { s: { r: 5, c: 7 }, e: { r: 5, c: 8 } }, // 26-Д-1
     { s: { r: 5, c: 9 }, e: { r: 5, c: 10 } }, // 26-ЗМ-1
     { s: { r: 5, c: 11 }, e: { r: 5, c: 12 } }, // 26-ИД-1
+    { s: { r: 5, c: 13 }, e: { r: 5, c: 14 } }, // 26-ИИ-1
   ];
+
+  interface CellData {
+    subject: string;
+    teacher: string;
+    aud: string;
+  }
+
+  // Helper to add a 3-row lesson slot exactly as structured in the user's schedule:
+  // Row 0: Subject (+ subgroup)
+  // Row 1: Empty line
+  // Row 2: Teacher name(s)
+  const addLesson3Rows = (
+    day: string,
+    date: string,
+    num: number,
+    time: string,
+    gA1: CellData,
+    gAN1: CellData,
+    gD1: CellData,
+    gZM1: CellData,
+    gID1: CellData,
+    gII1: CellData
+  ) => {
+    const rStart = data.length;
+
+    // Row 0 (Top line): Day/Date, Lesson Number, Time, Subjects, Aud
+    data.push([
+      `${day}\n${date}`,
+      num,
+      time,
+      gA1.subject,
+      gA1.aud,
+      gAN1.subject,
+      gAN1.aud,
+      gD1.subject,
+      gD1.aud,
+      gZM1.subject,
+      gZM1.aud,
+      gID1.subject,
+      gID1.aud,
+      gII1.subject,
+      gII1.aud,
+    ]);
+
+    // Row 1 (Middle line): Empty spacer row
+    data.push(['', '', '', '', '', '', '', '', '', '', '', '', '', '', '']);
+
+    // Row 2 (Bottom line): Teacher names
+    data.push([
+      '',
+      '',
+      '',
+      gA1.teacher,
+      '',
+      gAN1.teacher,
+      '',
+      gD1.teacher,
+      '',
+      gZM1.teacher,
+      '',
+      gID1.teacher,
+      '',
+      gII1.teacher,
+      '',
+    ]);
+
+    // Vertical merges for Day, Num, Time and Aud across the 3 rows
+    mergesList.push({ s: { r: rStart, c: 0 }, e: { r: rStart + 2, c: 0 } });
+    mergesList.push({ s: { r: rStart, c: 1 }, e: { r: rStart + 2, c: 1 } });
+    mergesList.push({ s: { r: rStart, c: 2 }, e: { r: rStart + 2, c: 2 } });
+
+    // Aud column merges across the 3 rows
+    [4, 6, 8, 10, 12, 14].forEach((audCol) => {
+      mergesList.push({ s: { r: rStart, c: audCol }, e: { r: rStart + 2, c: audCol } });
+    });
+  };
+
+  const emptyCell: CellData = { subject: '', teacher: '', aud: '' };
+
+  // Понедельник 14.09.2026 (exact data from screenshot)
+  // 1 пара (09.00-10.20)
+  addLesson3Rows('Понедельник', '14.09.2026', 1, '09.00-10.20',
+    emptyCell,
+    emptyCell,
+    { subject: 'Иностранный язык 2 п/г', teacher: 'Романенкова О.Л.', aud: '112' },
+    emptyCell,
+    emptyCell,
+    emptyCell
+  );
+
+  // 2 пара (10.30-11.50)
+  addLesson3Rows('Понедельник', '14.09.2026', 2, '10.30-11.50',
+    { subject: 'Информатика', teacher: 'Евсеева А.Е.', aud: '216' },
+    emptyCell,
+    { subject: 'Русский язык', teacher: 'Мартыненко А.И.', aud: '111' },
+    { subject: 'Иностранный язык', teacher: 'Карнюшина Е.Е.', aud: '312' },
+    emptyCell,
+    emptyCell
+  );
+
+  // 3 пара (12.10-13.30)
+  addLesson3Rows('Понедельник', '14.09.2026', 3, '12.10-13.30',
+    { subject: 'Разговоры о важном/ Россия- мои горизонты', teacher: 'Мягкова В.А.', aud: '309' },
+    emptyCell,
+    { subject: 'Информатика', teacher: 'Евсеева А.Е.', aud: '216' },
+    { subject: 'Разговоры о важном/ Россия- мои горизонты', teacher: 'Жеребцова М.А.', aud: '110' },
+    emptyCell,
+    emptyCell
+  );
+
+  // 4 пара (13.40-15.00)
+  addLesson3Rows('Понедельник', '14.09.2026', 4, '13.40-15.00',
+    { subject: 'Иностранный язык 2 п/г', teacher: 'Карнюшина Е.Е.', aud: '312' },
+    { subject: 'Русский язык', teacher: 'Сергеева М.В.', aud: '306' },
+    emptyCell,
+    { subject: 'Русский язык', teacher: 'Глущенко Н.Г.', aud: '110' },
+    { subject: 'Русский язык', teacher: 'Мартыненко А.И.', aud: '111' },
+    emptyCell
+  );
+
+  // 5 пара (15.20-16.40)
+  addLesson3Rows('Понедельник', '14.09.2026', 5, '15.20-16.40',
+    emptyCell,
+    { subject: 'Информатика', teacher: 'Парамонов Д.Д.', aud: '216' },
+    emptyCell,
+    emptyCell,
+    { subject: 'Математика', teacher: 'Лишик П.В.', aud: '217' },
+    { subject: 'Иностранный язык', teacher: 'Романенкова О.Л.; Карнюшина Е.Е.', aud: '112; 312' }
+  );
+
+  // 6 пара (16.50-18.10)
+  addLesson3Rows('Понедельник', '14.09.2026', 6, '16.50-18.10',
+    emptyCell,
+    { subject: 'Иностранный язык 1+2 п/г', teacher: 'Романенкова О.Л.', aud: '110' },
+    emptyCell,
+    emptyCell,
+    { subject: 'Введение в специальность', teacher: 'Мартыненко А.И.', aud: '111' },
+    emptyCell
+  );
+
+  // 7 пара (18.20-19.40)
+  addLesson3Rows('Понедельник', '14.09.2026', 7, '18.20-19.40',
+    emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell
+  );
+
+  // Вторник 15.09.2026
+  addLesson3Rows('Вторник', '15.09.2026', 1, '09.00-10.20',
+    { subject: 'История', teacher: 'Заболотный Е.П.', aud: '110' },
+    emptyCell,
+    { subject: 'Физика', teacher: 'Васильева О.О.', aud: '208' },
+    emptyCell,
+    emptyCell,
+    emptyCell
+  );
+
+  addLesson3Rows('Вторник', '15.09.2026', 2, '10.30-11.50',
+    { subject: 'Биология', teacher: 'Картенко Д.А.', aud: '110' },
+    emptyCell,
+    { subject: 'Математика', teacher: 'Пикуля Е.И.', aud: '111' },
+    emptyCell,
+    emptyCell,
+    emptyCell
+  );
+
+  addLesson3Rows('Вторник', '15.09.2026', 3, '12.10-13.30',
+    { subject: 'Физика', teacher: 'Васильева О.О.', aud: '208' },
+    emptyCell,
+    { subject: 'Информатика', teacher: 'Евсеева А.Е.', aud: '215' },
+    emptyCell,
+    { subject: 'Разговоры о важном/ Россия- мои горизонты', teacher: 'Барбальс О.Н.', aud: '117' },
+    emptyCell
+  );
+
+  addLesson3Rows('Вторник', '15.09.2026', 4, '13.40-15.00',
+    emptyCell,
+    { subject: 'Биология', teacher: 'Картенко Д.А.', aud: '116' },
+    emptyCell,
+    { subject: 'Физика', teacher: 'Васильева О.О.', aud: '208' },
+    { subject: 'История', teacher: 'Марченко Л.Е.', aud: '110' },
+    emptyCell
+  );
+
+  addLesson3Rows('Вторник', '15.09.2026', 5, '15.20-16.40',
+    emptyCell,
+    { subject: 'Физика', teacher: 'Васильева О.О.', aud: '208' },
+    emptyCell,
+    { subject: 'История', teacher: 'Лысенко П.А.', aud: '110' },
+    { subject: 'Литература', teacher: 'Мартыненко А.И.', aud: '111' },
+    emptyCell
+  );
+
+  addLesson3Rows('Вторник', '15.09.2026', 6, '16.50-18.10',
+    emptyCell,
+    { subject: 'Введение в специальность', teacher: 'Кравчук А.О.', aud: '110' },
+    emptyCell,
+    { subject: 'Введение в специальность', teacher: 'Мисюнайте А.Т.', aud: '111' },
+    { subject: 'Информатика', teacher: 'Рыжова М.В.', aud: '216' },
+    emptyCell
+  );
+
+  // Среда 16.09.2026 (Потоковые лекции)
+  addLesson3Rows('Среда', '16.09.2026', 1, '09.00-10.20',
+    { subject: 'Физика (Потоковая лекция)', teacher: 'Васильева О.О.', aud: '208' },
+    { subject: 'Физика (Потоковая лекция)', teacher: 'Васильева О.О.', aud: '208' },
+    { subject: 'Физика (Потоковая лекция)', teacher: 'Васильева О.О.', aud: '208' },
+    emptyCell,
+    emptyCell,
+    emptyCell
+  );
+
+  addLesson3Rows('Среда', '16.09.2026', 2, '10.30-11.50',
+    emptyCell,
+    emptyCell,
+    { subject: 'Введение в специальность', teacher: 'Мартыненко А.И.', aud: '111' },
+    { subject: 'Введение в специальность', teacher: 'Мартыненко А.И.', aud: '111' },
+    { subject: 'Введение в специальность', teacher: 'Мартыненко А.И.', aud: '111' },
+    emptyCell
+  );
+
+  const ws = XLSX.utils.aoa_to_sheet(data);
+  ws['!merges'] = mergesList;
 
   XLSX.utils.book_append_sheet(wb, ws, 'Расписание');
   return XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });

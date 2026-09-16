@@ -7,6 +7,7 @@ export interface ScheduleLesson {
   subject: string; // e.g. "Информатика"
   teacher: string; // e.g. "Евсеева А.Е."
   teacherSurname: string; // e.g. "Евсеева"
+  teacherSurnames?: string[]; // all teachers surnames if multiple
   group: string; // e.g. "26-А-1"
   groups: string[]; // e.g. ["26-А-1", "26-Д-1"] when combined
   classroom: string; // e.g. "216"
