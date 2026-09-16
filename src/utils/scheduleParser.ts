@@ -87,7 +87,96 @@ export const RUSSIAN_DAYS = [
   'Четверг',
   'Пятница',
   'Суббота',
+  'Воскресенье',
 ];
+
+export const RUSSIAN_MONTHS_MAP: Record<string, number> = {
+  янв: 0,
+  фев: 1,
+  мар: 2,
+  апр: 3,
+  мая: 4,
+  май: 4,
+  июн: 5,
+  июл: 6,
+  авг: 7,
+  сен: 8,
+  окт: 9,
+  ноя: 10,
+  дек: 11,
+};
+
+/**
+ * Parses dates from various Russian formats (DD.MM.YYYY, DD.MM.YY, DD.MM, or with Russian month names)
+ */
+export function parseRussianDate(str: string, fallbackYear = 2026): Date | null {
+  if (!str) return null;
+  const s = str.trim();
+
+  // 1. Full date: DD.MM.YYYY (e.g. 15.09.2026, 15/09/2026, 15-09-2026)
+  const fullMatch = s.match(/(\d{1,2})[./-](\d{1,2})[./-](\d{4})/);
+  if (fullMatch) {
+    const d = parseInt(fullMatch[1], 10);
+    const m = parseInt(fullMatch[2], 10) - 1;
+    const y = parseInt(fullMatch[3], 10);
+    if (d >= 1 && d <= 31 && m >= 0 && m <= 11) {
+      return new Date(y, m, d, 12, 0, 0);
+    }
+  }
+
+  // 2. Short year: DD.MM.YY (e.g. 15.09.26)
+  const shortYearMatch = s.match(/(\d{1,2})[./-](\d{1,2})[./-](\d{2})\b/);
+  if (shortYearMatch) {
+    const d = parseInt(shortYearMatch[1], 10);
+    const m = parseInt(shortYearMatch[2], 10) - 1;
+    const y = 2000 + parseInt(shortYearMatch[3], 10);
+    if (d >= 1 && d <= 31 && m >= 0 && m <= 11) {
+      return new Date(y, m, d, 12, 0, 0);
+    }
+  }
+
+  // 3. Day and month without year: DD.MM (e.g. 15.09)
+  const dayMonthMatch = s.match(/(\d{1,2})[./](\d{1,2})\b/);
+  if (dayMonthMatch) {
+    const d = parseInt(dayMonthMatch[1], 10);
+    const m = parseInt(dayMonthMatch[2], 10) - 1;
+    if (d >= 1 && d <= 31 && m >= 0 && m <= 11) {
+      return new Date(fallbackYear, m, d, 12, 0, 0);
+    }
+  }
+
+  // 4. Textual month name: e.g. "15 сентября 2026" or "15 сентября"
+  const monthTextMatch = s.match(/(\d{1,2})\s+([а-яёА-ЯЁ]{3,})(?:\s+(\d{4}))?/i);
+  if (monthTextMatch) {
+    const d = parseInt(monthTextMatch[1], 10);
+    const mPrefix = monthTextMatch[2].toLowerCase().slice(0, 3);
+    const y = monthTextMatch[3] ? parseInt(monthTextMatch[3], 10) : fallbackYear;
+    if (RUSSIAN_MONTHS_MAP[mPrefix] !== undefined && d >= 1 && d <= 31) {
+      return new Date(y, RUSSIAN_MONTHS_MAP[mPrefix], d, 12, 0, 0);
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Formats Date to Russian standard string "DD.MM.YYYY"
+ */
+export function formatDDMMYYYY(date: Date): string {
+  const d = String(date.getDate()).padStart(2, '0');
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const y = date.getFullYear();
+  return `${d}.${m}.${y}`;
+}
+
+/**
+ * Safely adds days to a date
+ */
+export function addDays(baseDate: Date, days: number): Date {
+  const res = new Date(baseDate.getTime());
+  res.setDate(res.getDate() + days);
+  return res;
+}
 
 /**
  * Extracts teacher name, surname, initials, and subject from a multi-line cell.
@@ -321,19 +410,38 @@ export function parseExcelWorkbook(workbook: XLSX.WorkBook, filename = 'schedule
     return String(cell.v).trim();
   };
 
-  // Find date range title
+  // Find date range title and base Monday date
+  let baseMondayDate = new Date(2026, 8, 14, 12, 0, 0); // Default 14.09.2026 (Monday)
   let dateRange = '14.09.2026 - 19.09.2026';
   let title = 'РАСПИСАНИЕ ЗАНЯТИЙ';
+  let foundExplicitRange = false;
 
-  for (let r = 0; r < Math.min(6, range.e.r); r++) {
+  for (let r = 0; r < Math.min(10, range.e.r); r++) {
     for (let c = 0; c <= range.e.c; c++) {
       const text = getCellText(r, c);
+      if (!text) continue;
       if (/РАСПИСАНИЕ/i.test(text)) {
         title = text;
       }
-      const dateMatch = text.match(/(\d{2}\.\d{2}\.\d{4}\s*-\s*\d{2}\.\d{2}\.\d{4})/);
-      if (dateMatch) {
-        dateRange = dateMatch[1];
+      // Match ranges like: "с 14.09.2026 по 19.09.2026", "14.09.2026 - 19.09.2026", "14.09-19.09"
+      const rangeMatch = text.match(
+        /(?:с\s*)?(\d{1,2}[./-]\d{1,2}(?:[./-]\d{2,4})?)\s*(?:по|[-–—])\s*(\d{1,2}[./-]\d{1,2}(?:[./-]\d{2,4})?)/i
+      );
+      if (rangeMatch) {
+        const parsedStart = parseRussianDate(rangeMatch[1]);
+        const parsedEnd = parseRussianDate(rangeMatch[2]);
+        if (parsedStart) {
+          baseMondayDate = parsedStart;
+          if (parsedEnd) {
+            dateRange = `${formatDDMMYYYY(parsedStart)} - ${formatDDMMYYYY(parsedEnd)}`;
+            foundExplicitRange = true;
+          }
+        }
+      } else if (!foundExplicitRange && r < 5) {
+        const singleDate = parseRussianDate(text);
+        if (singleDate) {
+          baseMondayDate = singleDate;
+        }
       }
     }
   }
@@ -416,7 +524,7 @@ export function parseExcelWorkbook(workbook: XLSX.WorkBook, filename = 'schedule
   // Parse lesson rows using 3-row slot awareness
   const rawLessons: ScheduleLesson[] = [];
   let currentDay = 'Понедельник';
-  let currentDate = '14.09.2026';
+  let currentDate = formatDDMMYYYY(baseMondayDate);
   let currentLessonNum = 1;
   let currentTime = DEFAULT_TIMES[1];
 
@@ -427,7 +535,8 @@ export function parseExcelWorkbook(workbook: XLSX.WorkBook, filename = 'schedule
     // Check Day column (col 0, 1 or 2)
     const dayCellText = getCellText(r, 0) || getCellText(r, 1);
     let dayChanged = false;
-    for (const d of RUSSIAN_DAYS) {
+    for (let dayIdx = 0; dayIdx < RUSSIAN_DAYS.length; dayIdx++) {
+      const d = RUSSIAN_DAYS[dayIdx];
       if (new RegExp(d, 'i').test(dayCellText)) {
         if (currentDay !== d) {
           currentDay = d;
@@ -436,9 +545,15 @@ export function parseExcelWorkbook(workbook: XLSX.WorkBook, filename = 'schedule
           currentLessonNum = 1;
           currentTime = DEFAULT_TIMES[1];
         }
-        const dateMatch = dayCellText.match(/(\d{2}\.\d{2}\.\d{4})/);
-        if (dateMatch) {
-          currentDate = dateMatch[1];
+        // Try parsing explicit date from the cell text (e.g. "Вторник 15.09.2026" or "15.09")
+        const explicitDate = parseRussianDate(dayCellText, baseMondayDate.getFullYear());
+        if (explicitDate) {
+          currentDate = formatDDMMYYYY(explicitDate);
+          baseMondayDate = addDays(explicitDate, -dayIdx);
+        } else {
+          // If cell only contains day name (e.g. "Вторник"), calculate by weekday offset:
+          // Monday -> baseMonday + 0, Tuesday -> baseMonday + 1, Wednesday -> baseMonday + 2, etc.
+          currentDate = formatDDMMYYYY(addDays(baseMondayDate, dayIdx));
         }
         break;
       }
@@ -682,6 +797,32 @@ export function parseExcelWorkbook(workbook: XLSX.WorkBook, filename = 'schedule
 
     // Step to the next lesson slot
     r += slotHeight;
+  }
+
+  // Ensure every lesson has the proper date for its day of the week
+  for (const lesson of rawLessons) {
+    const dayIdx = RUSSIAN_DAYS.findIndex((d) => new RegExp(d, 'i').test(lesson.day));
+    if (dayIdx >= 0) {
+      const expectedDate = formatDDMMYYYY(addDays(baseMondayDate, dayIdx));
+      // If date is missing or was duplicated from Monday onto a non-Monday day, fix to correct calendar date
+      if (!lesson.date || (dayIdx > 0 && lesson.date === formatDDMMYYYY(baseMondayDate))) {
+        lesson.date = expectedDate;
+      }
+    }
+  }
+
+  // If dateRange wasn't explicitly found in header, derive it from active days
+  if (!foundExplicitRange && rawLessons.length > 0) {
+    const sortedDays = Array.from(new Set(rawLessons.map((l) => l.day))).sort(
+      (a, b) => RUSSIAN_DAYS.indexOf(a) - RUSSIAN_DAYS.indexOf(b)
+    );
+    const firstDayIdx = RUSSIAN_DAYS.indexOf(sortedDays[0]);
+    const lastDayIdx = RUSSIAN_DAYS.indexOf(sortedDays[sortedDays.length - 1]);
+    if (firstDayIdx >= 0 && lastDayIdx >= 0) {
+      dateRange = `${formatDDMMYYYY(addDays(baseMondayDate, firstDayIdx))} - ${formatDDMMYYYY(
+        addDays(baseMondayDate, lastDayIdx)
+      )}`;
+    }
   }
 
   // Consolidate identical classes into combined streams
