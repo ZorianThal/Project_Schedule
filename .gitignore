@@ -6,3 +6,5 @@ coverage/
 *.log
 .env*
 !.env.example
+college-schedule-telegram-bot (1)/
+college-schedule-telegram-bot (1).zip

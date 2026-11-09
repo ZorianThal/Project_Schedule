@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 import path from 'path';
 import multer from 'multer';
@@ -11,6 +13,8 @@ import { ScheduleData, TelegramBotStatus } from './src/types';
 let currentSchedule: ScheduleData = getSampleScheduleData();
 
 // Telegram Bot State
+const TG_API_BASE = process.env.TELEGRAM_API_BASE || 'https://api.telegram.org';
+
 const telegramBotStatus: TelegramBotStatus = {
   configured: false,
   active: false,
@@ -308,7 +312,7 @@ async function initTelegramBot() {
 
   try {
     // 1. Verify token with getMe
-    const res = await fetch(`https://api.telegram.org/bot${token}/getMe`);
+    const res = await fetch(`${TG_API_BASE}/bot${token}/getMe`);
     const data = await res.json() as any;
 
     if (!data.ok) {
@@ -339,7 +343,7 @@ async function startTelegramPolling(token: string) {
   const poll = async () => {
     while (telegramBotStatus.active) {
       try {
-        const url = `https://api.telegram.org/bot${token}/getUpdates?offset=${lastUpdateId + 1}&timeout=20`;
+        const url = `${TG_API_BASE}/bot${token}/getUpdates?offset=${lastUpdateId + 1}&timeout=20`;
         const res = await fetch(url, { signal: pollingController?.signal });
         const data = await res.json() as any;
 
@@ -378,7 +382,7 @@ async function handleTelegramUpdate(token: string, update: any) {
 
     // Acknowledge callback
     try {
-      await fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery`, {
+      await fetch(`${TG_API_BASE}/bot${token}/answerCallbackQuery`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ callback_query_id: update.callback_query.id }),
@@ -404,7 +408,7 @@ async function handleTelegramUpdate(token: string, update: any) {
 
   // Send message via Telegram API
   try {
-    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    const tgRes = await fetch(`${TG_API_BASE}/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -414,6 +418,19 @@ async function handleTelegramUpdate(token: string, update: any) {
         reply_markup: inlineKeyboard.length > 0 ? { inline_keyboard: inlineKeyboard } : undefined,
       }),
     });
+    const tgData = (await tgRes.json()) as any;
+    if (!tgData.ok) {
+      console.warn('Telegram sendMessage failed with Markdown, retrying without markdown:', tgData.description);
+      await fetch(`${TG_API_BASE}/bot${token}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: botReply.replace(/[*_`\[\]]/g, ''),
+          reply_markup: inlineKeyboard.length > 0 ? { inline_keyboard: inlineKeyboard } : undefined,
+        }),
+      });
+    }
   } catch (err: any) {
     console.error('Failed to send Telegram message:', err.message);
   }
